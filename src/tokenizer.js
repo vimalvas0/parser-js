@@ -1,3 +1,19 @@
+const Spec = [
+  //-------------------------------
+  //
+  [/^\s+/, null], // Blank spaces
+  [/\/\/.*/, null], // Single-line comments
+  [/^\/\*[/s/S]*?\*\//, null], // Double-line commnents
+  //----------------------------------
+  //Number
+  [/^\d+/, 'NUMBER'],
+
+  //-----------------------------------
+  //String
+  [/"[^"]*"/, 'STRING'],
+  [/'[^']*'/, 'STRING'],
+];
+
 /**
  * Tokenizer Class
  *
@@ -43,27 +59,55 @@ class Tokenizer {
       return null;
     }
 
-    let string = this._string.slice(this._cursor);
+    let string = this._string.slice(this._cursor++);
 
-    let matched = /^d+/.exec(string);
-    // Number :
-    if (matched != null) {
-      this._cursor += matched[0].length;
+    for (const [regex, tokenType] of Spec) {
+      let matched = this._match(regex, string);
+
+      if (matched == null) {
+        continue;
+      }
+
+      if (tokenType == null) {
+        return this.getNextToken();
+      }
+
       return {
-        type: 'NUMBER',
-        value: matched[0],
+        type: tokenType,
+        value: matched,
       };
     }
 
-    matched = /"[^"]*"/.exec(string);
-    // String :
-    if (matched != null) {
-      this._cursor += matched[0].length;
-      return {
-        type: 'STRING',
-        value: matched[0].slice(1, -1),
-      };
+    // let matched = /^\d+/.exec(string);
+    // // Number :
+    // if (matched != null) {
+    //   this._cursor += matched[0].length;
+    //   return {
+    //     type: 'NUMBER',
+    //     value: matched[0],
+    //   };
+    // }
+
+    // matched = /"[^"]*"/.exec(string);
+    // // String :
+    // if (matched !== null) {
+    //   this._cursor += matched[0].length;
+    //   return {
+    //     type: 'STRING',
+    //     value: matched[0],
+    //   };
+    // }
+
+    throw new Error(`Unrecognized token : ${string[0]} `);
+  }
+
+  _match(regex, string) {
+    let matched = regex.exec(string);
+    if (matched !== null) {
+      return matched[0];
     }
+
+    return null;
   }
 }
 
