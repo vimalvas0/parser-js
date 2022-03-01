@@ -47,27 +47,21 @@ class Tokenizer {
 
     let matched = /^d+/.exec(string);
     // Number :
-    if (!Number.isNaN(Number(string[0]))) {
-      let number = '';
-      while (!Number.isNaN(Number(string[this._cursor]))) {
-        number += string[this._cursor++];
-      }
+    if (matched != null) {
+      this._cursor += matched[0].length;
       return {
         type: 'NUMBER',
-        value: number,
+        value: matched[0],
       };
     }
 
+    matched = /"[^"]*"/.exec(string);
     // String :
-    if (string[0] == '"') {
-      let literal = '';
-      do {
-        literal += string[this._cursor++];
-      } while (string[this._cursor] != '"' && !this._EOF());
-      literal += string[this._cursor];
+    if (matched != null) {
+      this._cursor += matched[0].length;
       return {
         type: 'STRING',
-        value: literal.slice(1, -1),
+        value: matched[0].slice(1, -1),
       };
     }
   }
