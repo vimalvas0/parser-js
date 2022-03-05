@@ -2,8 +2,8 @@ const Spec = [
   //-------------------------------
   //
   [/^\s+/, null], // Blank spaces
-  [/\/\/.*/, null], // Single-line comments
-  [/^\/\*[/s/S]*?\*\//, null], // Double-line commnents
+  [/^\/\/.*/, null], // Single-line comments
+  [/^\/\*[\s\S]*?\*\//, null], // Double-line commnents
   //----------------------------------
   //Number
   [/^\d+/, 'NUMBER'],
@@ -60,6 +60,7 @@ class Tokenizer {
     }
 
     let string = this._string.slice(this._cursor++);
+    console.log(string);
 
     for (const [regex, tokenType] of Spec) {
       let matched = this._match(regex, string);
